@@ -4,6 +4,7 @@ var session = require('express-session');
 var app = express();
 var handlebars = require('express-handlebars').create({defaultLayout:'main'});
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -24,99 +25,21 @@ app.get('/count',function(req,res){
   res.render('counter', context);
 });
 
-app.get('/other-page',function(req,res){
-  res.render('other-page');
-});
-
-app.get('/test-page',function(req,res){
-  res.render('test-page');
-});
-
-function getRando(){
-  var valToDisplay = {};
-  valToDisplay.rando = Math.random();
-  return valToDisplay;
-}
-
-app.get('/rando-page',function(req,res){
-  res.render('rando-page', getRando());
-});
-
-function genContext(){
-  var stuffToDisplay = {};
-  stuffToDisplay.time = (new Date(Date.now())).toLocaleTimeString('en-US');
-  return stuffToDisplay;
-}
-
-app.get('/time',function(req,res){
-  res.render('time', genContext());
-});
-
-app.get('/show-data',function(req,res){
+app.post('/count',function(req,res){
   var context = {};
-  context.sentData = req.query.myData;
-  res.render('show-data', context);
-});
-
-app.get('/get-loopback',function(req,res){
-  var qParams = "";
-  for (var p in req.query){
-    qParams += "The name " + p + " contains the value " + req.query[p] + ", ";
+  if(req.body.command === "resetCount"){
+    //req.session.count = 0;
+    req.session.destroy();
+  } else {
+    context.err = true;
   }
-  qParams = qParams.substring(0,qParams.lastIndexOf(','));
-  qParams += '.';
-  var context = {};
-  context.dataList = qParams;
-  res.render('get-loopback', context);
-});
-
-app.get('/get-loopback-improved',function(req,res){
-  var qParams = [];
-  for (var p in req.query){
-    qParams.push({'name':p,'value':req.query[p]})
+  if(req.session){
+    context.count = req.session.count;
+  } else {
+    context.count = 0;
   }
-  var context = {};
-  context.dataList = qParams;
-  res.render('get-loopback-improved', context);
-});
-
-app.get('/get-loopback-table',function(req,res){
-  var qParams = [];
-  for (var p in req.query){
-    qParams.push({'name':p,'value':req.query[p]})
-  }
-  var context = {};
-  context.reqType = 'GET';
-  context.dataList = qParams;
-  res.render('get-loopback-table', context);
-});
-
-app.post('/get-loopback-table', function(req,res){
-  var qParams = [];
-  for (var p in req.body){
-    qParams.push({'name':p,'value':req.body[p]})
-  }
-  var context = {};
-  context.reqType = 'POST';
-  context.dataList = qParams;
-  res.render('get-loopback-table', context);
-});
-
-
-app.post('/post-loopback', function(req,res){
-  var qParams = [];
-  for (var p in req.body){
-    qParams.push({'name':p,'value':req.body[p]})
-  }
-  console.log(qParams);
-  console.log(req.body);
-  var context = {};
-  context.dataList = qParams;
-  res.render('post-loopback', context);
-});
-
-app.post('/post-test', function(req,res){
-  res.send('This is a test!');
+  req.session.count = context.count + 1;
+  res.render('counter', context);
 });
 
 app.use(function(req,res){
