@@ -28,8 +28,8 @@ app.get('/count',function(req,res){
 app.post('/count',function(req,res){
   var context = {};
   if(req.body.command === "resetCount"){
-    //req.session.count = 0;
-    req.session.destroy();
+    req.session.count = 0;
+    //req.session.destroy();
   } else {
     context.err = true;
   }
