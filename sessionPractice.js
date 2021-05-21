@@ -62,6 +62,12 @@ app.post('/',function(req,res){
   res.render('toDo',context);
 });
 
+  if(req.body['Log Out']){
+    req.session.destroy();
+    res.render('newSession', context);
+    })
+  }
+
 app.get('/count',function(req,res){
   var context = {};
   context.count = req.session.count || 0;
