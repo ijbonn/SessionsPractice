@@ -54,6 +54,12 @@ app.post('/',function(req,res){
       return e.id != req.body.id;
     })
   }
+  
+  if(req.body['Log Out']){
+    req.session.destroy();
+    res.render('newSession',context);
+    return;
+  }
 
   context.name = req.session.name;
   context.toDoCount = req.session.toDo.length;
