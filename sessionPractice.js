@@ -65,7 +65,7 @@ app.post('/',function(req,res){
   if(req.body['Log Out']){
     req.session.destroy();
     res.render('newSession', context);
-  });
+  }
   
 
 app.get('/count',function(req,res){
