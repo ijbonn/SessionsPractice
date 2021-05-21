@@ -6,6 +6,7 @@ var app = express();
 var handlebars = require('express-handlebars').create({defaultLayout:'main'});
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var credentials = require('./credentials.js');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -14,8 +15,9 @@ app.use(session({secret:'SuperSecretPassword'}));
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.set('port', 4493);
+app.use(express.static('public'));
 
-
+// Home page of To-Do List
 app.get('/',function(req,res,next){
   var context = {};
   //If there is no session, go to the main page.
@@ -69,6 +71,7 @@ app.post('/',function(req,res){
   res.render('toDo',context);
 });
 
+//Get example 
 app.get('/get-ex',function(req,res,next){
   var context = {};
   request('http://api.openweathermap.org/data/2.5/weather?q=corvallis&APPID=' + credentials.owmKey, function(err, response, body){
@@ -76,6 +79,40 @@ app.get('/get-ex',function(req,res,next){
       context.owm = body;
       res.render('get-ex',context);
     } else {
+      if(response){
+        console.log(response.statusCode);
+      }
+      next(err);
+    }
+  });
+});
+
+app.get('/get-post-ex',function(req,res,next){
+  var context = {};
+  request('http://api.openweathermap.org/data/2.5/weather?q=corvallis&APPID=' + credentials.owmKey, function(err, response, body){
+    if(!err && response.statusCode < 400){
+      context.owm = body;
+      request({
+        "url":"http://httpbin.org/post",
+        "method":"POST",
+        "headers":{
+          "Content-Type":"application/json"
+        },
+        "body":'{"foo":"bar","number":1}'
+      }, function(err, response, body){
+        if(!err && response.statusCode < 400){
+          context.httpbin = body;
+          res.render('get-post-ex',context);
+        }else{
+          console.log(err);
+          if(response){
+            console.log(response.statusCode);
+          }
+          next(err);
+        }
+      });
+    } else {
+      console.log(err);
       if(response){
         console.log(response.statusCode);
       }
