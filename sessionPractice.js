@@ -53,12 +53,6 @@ app.post('/',function(req,res){
     req.session.toDo = req.session.toDo.filter(function(e){
       return e.id != req.body.id;
     })
-  /*  
-  if(req.body['Log Out']){
-    req.session.destroy();
-    res.render('newSession', context);
-  }
-   */
   }
 
   context.name = req.session.name;
