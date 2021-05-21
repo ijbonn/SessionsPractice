@@ -53,6 +53,12 @@ app.post('/',function(req,res){
     req.session.toDo = req.session.toDo.filter(function(e){
       return e.id != req.body.id;
     })
+    
+  if(req.body['Log Out']){
+    req.session.destroy();
+    res.render('newSession', context);
+  }
+    
   }
 
   context.name = req.session.name;
@@ -62,16 +68,10 @@ app.post('/',function(req,res){
   res.render('toDo',context);
 });
 
-  if(req.body['Log Out']){
-    req.session.destroy();
-    res.render('newSession', context);
-  }
-  
 
 app.get('/count',function(req,res){
   var context = {};
-  context.count = req.session.count || 0;
-  req.session.count = context.count + 1;
+  context.count = req.session.count || 0;  req.session.count = context.count + 1;
   res.render('count', context);
 });
 
