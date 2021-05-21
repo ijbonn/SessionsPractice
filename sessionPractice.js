@@ -1,5 +1,6 @@
 var express = require('express');
 var session = require('express-session');
+var request = require('request');
 
 var app = express();
 var handlebars = require('express-handlebars').create({defaultLayout:'main'});
@@ -68,6 +69,20 @@ app.post('/',function(req,res){
   res.render('toDo',context);
 });
 
+app.get('/get-ex',function(req,res,next){
+  var context = {};
+  request('http://api.openweathermap.org/data/2.5/weather?q=corvallis&APPID=' + credentials.owmKey, function(err, response, body){
+    if(!err && response.statusCode < 400){
+      context.owm = body;
+      res.render('get-ex',context);
+    } else {
+      if(response){
+        console.log(response.statusCode);
+      }
+      next(err);
+    }
+  });
+});
 
 app.get('/count',function(req,res){
   var context = {};
