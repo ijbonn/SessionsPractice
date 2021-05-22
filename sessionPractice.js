@@ -87,22 +87,34 @@ app.get('/get-ex',function(req,res,next){
   });
 });
 
+//Get and post example with nested requests
 app.get('/get-post-ex',function(req,res,next){
   var context = {};
   request('http://api.openweathermap.org/data/2.5/weather?q=corvallis&APPID=' + credentials.owmKey, function(err, response, body){
     if(!err && response.statusCode < 400){
-      context.owm = body;
-      request({
-        "url":"http://httpbin.org/post",
-        "method":"POST",
-        "headers":{
-          "Content-Type":"application/json"
-        },
-        "body":'{"foo":"bar","number":1}'
-      }, function(err, response, body){
-        if(!err && response.statusCode < 400){
-          context.httpbin = body;
-          res.render('get-post-ex',context);
+      context.owm1 = body;
+      request('http://api.openweathermap.org/data/2.5/weather?q=nampa&APPID=' + credentials.owmKey, function(err, response, body){
+        if(!err && response.statusCode <400){
+          context.owm2 = body;
+          request({
+            "url":"http://httpbin.org/post",
+            "method":"POST",
+            "headers":{
+              "Content-Type":"application/json"
+            },
+            "body":'{"foo":"bar","number":1}'
+          }, function(err,response,body){
+            if(!err && response.statusCode < 400){
+              context.httpbin1 = body;
+              res.render('get-post-ex',context);
+            }else{
+              console.log(err);
+              if(response){
+                console.log(response.statusCode);
+              }
+              next(err);
+            }
+          })
         }else{
           console.log(err);
           if(response){
@@ -110,8 +122,8 @@ app.get('/get-post-ex',function(req,res,next){
           }
           next(err);
         }
-      });
-    } else {
+      })
+    }else{
       console.log(err);
       if(response){
         console.log(response.statusCode);
@@ -119,8 +131,8 @@ app.get('/get-post-ex',function(req,res,next){
       next(err);
     }
   });
-});
-
+}
+        
 app.get('/count',function(req,res){
   var context = {};
   context.count = req.session.count || 0;  req.session.count = context.count + 1;
