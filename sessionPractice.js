@@ -131,7 +131,7 @@ app.get('/get-post-ex',function(req,res,next){
       next(err);
     }
   });
-}
+});
         
 app.get('/count',function(req,res){
   var context = {};
