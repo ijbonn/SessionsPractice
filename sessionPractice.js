@@ -11,11 +11,11 @@ var credentials = require('./credentials.js');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(session({secret:'SuperSecretPassword'}));
+app.use(express.static('public'));
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.set('port', 4493);
-app.use(express.static('public'));
 
 // Home page of To-Do List
 app.get('/',function(req,res,next){
